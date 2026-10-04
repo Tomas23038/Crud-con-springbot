@@ -1,32 +1,43 @@
 package com.javeriana.zoo_fantastico.service;
+
+import com.javeriana.zoo_fantastico.dto.zonecount;
 import com.javeriana.zoo_fantastico.dto.zoneresponse;
 import com.javeriana.zoo_fantastico.exception.ResourceNotFoEx;
 import com.javeriana.zoo_fantastico.model.Zone;
 import com.javeriana.zoo_fantastico.repository.CreatureRepository;
 import com.javeriana.zoo_fantastico.repository.ZoneRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class ZoneService{
+public class ZoneService {
+
     private final ZoneRepository zoneRepository;
     private final CreatureRepository creatureRepository;
 
-    public ZoneService(ZoneRepository zoneRepository, CreatureRepository creatureRepository){
-        this.zoneRepository=zoneRepository;
-        this.creatureRepository=creatureRepository;
+    public ZoneService(ZoneRepository zoneRepository, CreatureRepository creatureRepository) {
+        this.zoneRepository = zoneRepository;
+        this.creatureRepository = creatureRepository;
     }
-    public zoneresponse createZone(Zone zone){
-        return toResponse(zoneRepository.save(zone));
+
+    public zoneresponse createZone(Zone zone) {
+        return toResponse(zoneRepository.save(zone), 0);
     }
+
     public List<zoneresponse> getAllZones() {
+        Map<Long, Long> counts = creatureRepository.countCreaturesByZone().stream()
+                .collect(Collectors.toMap(zonecount::getZoneId, zonecount::getTotal));
         return zoneRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(zone -> toResponse(zone, counts.getOrDefault(zone.getId(), 0L)))
                 .toList();
     }
 
     public zoneresponse getZoneById(Long id) {
-        return toResponse(findZone(id));
+        Zone zone = findZone(id);
+        return toResponse(zone, creatureRepository.countByZoneId(id));
     }
 
     public zoneresponse updateZone(Long id, Zone updatedZone) {
@@ -39,7 +50,7 @@ public class ZoneService{
         zone.setName(updatedZone.getName());
         zone.setDescription(updatedZone.getDescription());
         zone.setCapacity(updatedZone.getCapacity());
-        return toResponse(zoneRepository.save(zone));
+        return toResponse(zoneRepository.save(zone), currentCount);
     }
 
     public void deleteZone(Long id) {
@@ -55,9 +66,8 @@ public class ZoneService{
                 .orElseThrow(() -> new ResourceNotFoEx("Zone not found"));
     }
 
-    private zoneresponse toResponse(Zone zone) {
-        long count = creatureRepository.countByZoneId(zone.getId());
+    private zoneresponse toResponse(Zone zone, long creatureCount) {
         return new zoneresponse(zone.getId(), zone.getName(), zone.getDescription(),
-                zone.getCapacity(), count);
+                zone.getCapacity(), creatureCount);
     }
 }
