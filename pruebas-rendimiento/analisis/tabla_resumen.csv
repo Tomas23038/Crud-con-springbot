@@ -1,0 +1,4 @@
+﻿Usuarios,Peticiones,Promedio (ms),Mediana (ms),Percentil 90 (ms),Percentil 95 (ms),Percentil 99 (ms),Minimo (ms),Maximo (ms),Desv. estandar (ms),Errores (%),Throughput (peticiones/s),Duracion (s),Latencia promedio (ms),Usuarios activos a la vez (max),Usuarios activos a la vez (prom)
+10,1000,27.68,20.0,53.1,72.05,113.02,7,145,20.41,0.0,281.29,3.56,27.49,10,8.2
+50,5000,109.88,101.0,201.0,243.0,351.01,9,628,72.31,0.0,415.21,12.04,109.73,50,46.23
+100,10000,236.25,220.0,431.0,547.0,813.01,13,1597,165.87,0.0,398.53,25.09,236.09,100,95.39
