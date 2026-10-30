@@ -2,6 +2,8 @@
 
 API REST para administrar las **criaturas fantásticas** de un zoológico y las **zonas** donde habitan. Es un laboratorio del curso *Desarrollo de Software* (Pontificia Universidad Javeriana) cuyo objetivo es construir un CRUD con una **arquitectura en 3 capas** (presentación, lógica de negocio y acceso a datos), persistencia en **MySQL** y control de versiones con **Git siguiendo Gitflow**.
 
+Sobre ese CRUD se desarrolló después la **Cuarta Práctica, "Pruebas de CRUD"**: pruebas unitarias (JUnit y Mockito), pruebas de integración con una base de datos **H2** en memoria y pruebas de rendimiento con **Apache JMeter**.
+
 ---
 
 ## Tabla de contenidos
@@ -14,6 +16,7 @@ API REST para administrar las **criaturas fantásticas** de un zoológico y las 
 - [Endpoints de la API](#endpoints-de-la-api)
 - [Ejemplos de uso](#ejemplos-de-uso)
 - [Manejo de errores](#manejo-de-errores)
+- [Pruebas](#pruebas)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Flujo de trabajo con Gitflow](#flujo-de-trabajo-con-gitflow)
 - [Documentación](#documentación)
@@ -31,6 +34,9 @@ API REST para administrar las **criaturas fantásticas** de un zoológico y las 
 | MySQL | Base de datos relacional (`mysql-connector-j`) |
 | Lombok | Getters, setters y constructores de las entidades |
 | Maven | Gestión de dependencias (incluye el wrapper `mvnw`) |
+| JUnit 5 y Mockito | Pruebas unitarias |
+| H2 | Base de datos en memoria, **solo para las pruebas** |
+| Apache JMeter | Pruebas de rendimiento |
 
 ---
 
@@ -162,10 +168,11 @@ La API queda disponible en **http://localhost:8080**.
 ### 4. Ejecutar las pruebas
 
 ```bash
-./mvnw test
+./mvnw test          # Linux / macOS
+.\mvnw.cmd test      # Windows
 ```
 
-> La prueba `contextLoads` levanta el contexto completo de Spring, así que también necesita MySQL en ejecución y la variable `DB_PASSWORD` definida.
+> Las pruebas **no necesitan MySQL**: usan una base de datos H2 en memoria. Más detalles en [Pruebas](#pruebas).
 
 ---
 
@@ -267,6 +274,38 @@ En los errores de validación (`400`) se devuelve un objeto con **un mensaje por
 
 ---
 
+## Pruebas
+
+El proyecto tiene **45 pruebas automáticas** y un plan de pruebas de rendimiento.
+
+| Tipo | Clases | Pruebas | Qué comprueban |
+|---|---|---|---|
+| Unitarias | `CreatureServiceTest`, `ZoneServiceTest` | 9 + 8 | La lógica de los servicios (crear, consultar, actualizar, eliminar y reglas de negocio). Los repositorios se reemplazan por *mocks* de Mockito, así que no usan base de datos |
+| Validaciones del modelo | `CreatureValidationTest`, `ZoneValidationTest` | 8 + 3 | Que las anotaciones de `Creature` y `Zone` (`@NotBlank`, `@Min`, `@Max`, `@NotNull`) rechacen los datos inválidos |
+| Integración | `CreatureServiceIntegrationTest`, `ZoneServiceIntegrationTest` | 10 + 6 | El servicio junto con una base de datos real (H2): que los datos se guarden, se actualicen y se borren, y que las reglas de negocio no dejen cambios indebidos |
+| Arranque | `ZooFantasticoApplicationTests` | 1 | Que la aplicación de Spring arranque |
+| Rendimiento | `pruebas-rendimiento/` | 3 cargas | `POST /api/creatures` con 10, 50 y 100 usuarios simultáneos usando JMeter |
+
+### Base de datos de las pruebas
+
+Las pruebas usan **H2**, una base de datos que vive en memoria: se crea al iniciar las pruebas y desaparece al terminar. Su configuración está en `src/test/resources/application.properties`, que Spring usa **solo al correr las pruebas**. La aplicación normal sigue usando MySQL con `src/main/resources/application.properties`.
+
+### Comandos
+
+```bash
+./mvnw test                                  # todas las pruebas
+./mvnw test -Dtest="*IntegrationTest"        # solo las de integración
+./mvnw test -Dtest="CreatureServiceTest"     # una sola clase
+```
+
+En Windows se usa `.\mvnw.cmd` en lugar de `./mvnw`.
+
+### Pruebas de rendimiento
+
+El plan de JMeter, los resultados y los gráficos están en [`pruebas-rendimiento/`](pruebas-rendimiento/), que tiene su propio README con las instrucciones. Resumen: con 10, 50 y 100 usuarios simultáneos no hubo ningún error, y el tiempo promedio de respuesta fue de 27,7 ms, 109,9 ms y 236,2 ms.
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -282,9 +321,16 @@ Crud-con-springbot/
 │   │   │   ├── exception/       # Excepciones y manejador global
 │   │   │   └── ZooFantasticoApplication.java
 │   │   └── resources/
-│   │       └── application.properties
-│   └── test/                    # Prueba de carga del contexto
-├── docs/                        # Partes del informe
+│   │       └── application.properties   # conexión a MySQL
+│   └── test/
+│       ├── java/com/javeriana/zoo_fantastico/
+│       │   ├── service/         # Pruebas unitarias y de integración de los servicios
+│       │   ├── model/           # Pruebas de las validaciones del modelo
+│       │   └── ZooFantasticoApplicationTests.java
+│       └── resources/
+│           └── application.properties   # conexión a H2 (solo pruebas)
+├── pruebas-rendimiento/         # Plan, resultados y análisis de JMeter
+├── docs/                        # Informes de los laboratorios
 ├── Informe_Completo_Zoo_Fantastico_RealG4Life.docx
 ├── pom.xml
 ├── mvnw / mvnw.cmd
@@ -313,12 +359,18 @@ Cada funcionalidad se desarrolló en su propia rama `feature/*` y se integró a 
 8. Asignación y cambio de zona de una criatura.
 9. Corrección del problema N+1.
 10. Informe del laboratorio.
+11. Pruebas unitarias y de validaciones (`feature/pruebas-unitarias`).
+12. Pruebas de integración con H2 (`feature/pruebas-integrales`).
+13. Pruebas de rendimiento con JMeter (`feature/pruebas-jmeter`).
 
 ---
 
 ## Documentación
 
-El informe completo del laboratorio está en [`Informe_Completo_Zoo_Fantastico_RealG4Life.docx`](Informe_Completo_Zoo_Fantastico_RealG4Life.docx); las partes individuales están en la carpeta [`docs/`](docs/).
+| Laboratorio | Documento |
+|---|---|
+| Laboratorio 3: CRUD con Spring Boot | [`Informe_Completo_Zoo_Fantastico_RealG4Life.docx`](Informe_Completo_Zoo_Fantastico_RealG4Life.docx) y [`docs/Informe_Parte1_Kevin.docx`](docs/Informe_Parte1_Kevin.docx) |
+| Cuarta Práctica: Pruebas de CRUD | [`docs/Informe_Pruebas_CRUD.docx`](docs/Informe_Pruebas_CRUD.docx) (partes 1, 2 y 4) y [`docs/Informe_Parte4_JMeter.docx`](docs/Informe_Parte4_JMeter.docx) (detalle de JMeter) |
 
 ---
 
