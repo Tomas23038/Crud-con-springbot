@@ -326,9 +326,3 @@ El informe completo del laboratorio está en [`Informe_Completo_Zoo_Fantastico_R
 
 **RealG4Life** — Pontificia Universidad Javeriana · Desarrollo de Software
 
-| Integrante | GitHub |
-|---|---|
-| _Nombre_ | [@Tomas23038](https://github.com/Tomas23038) |
-| _Nombre_ | _@usuario_ |
-| _Nombre_ | _@usuario_ |
-| _Nombre_ | _@usuario_ |
