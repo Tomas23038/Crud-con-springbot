@@ -1,0 +1,567 @@
+{
+  "info": {
+    "_postman_id": "16655fd2-e24a-4e13-82d4-db0fcdd9eb01",
+    "name": "Zoo-local",
+    "description": "Pruebas de sistema automatizadas del CRUD de criaturas y zonas del laboratorio Zoo-Fantástico que implementa Spring Boot y MySQL. Incluye la creación de una zona de prueba, el CRUD completo de criaturas con tests del código de respuesta y de los datos, las validaciones de errores (400 y 404), la regla de criatura en estado crítico (409) y la limpieza final de los datos. Los identificadores (zoneId, creatureId, criticalId) se guardan en variables de entorno para encadenar las solicitudes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58705690",
+    "_collection_link": "https://go.postman.co/collection/58705690-16655fd2-e24a-4e13-82d4-db0fcdd9eb01?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CRUD - criatura",
+      "item": [
+        {
+          "name": "Crear zona",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Zona creada: status 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\nconst zone = pm.response.json();\r\npm.test(\"La zona trae id y los datos enviados\", function () {\r\n    pm.expect(zone).to.have.property(\"id\");\r\n    pm.expect(zone.name).to.eql(\"Zona Pruebas Postman\");\r\n    pm.expect(zone.capacity).to.eql(10);\r\n    pm.expect(zone.creatureCount).to.eql(0);\r\n});\r\npm.environment.set(\"zoneId\", zone.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Zona Pruebas Postman\",\r\n    \"description\":\"Creada por la colección\",\r\n    \"capacity\":10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/zones",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "zones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear criatura",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Creature created successfully\", function () {\r\n    pm.response.to.have.status(201);\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.have.property(\"id\");\r\n    pm.expect(jsonData.name).to.eql(\"Dragón\");\r\n});\r\npm.environment.set(\"creatureId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Dragón\",\r\n    \"species\":\"Dragón\",\r\n    \"size\":12.5,\r\n    \"dangerLevel\":7,\r\n    \"healthStatus\":\"healthy\",\r\n    \"zone\":{\"id\":{{zoneId}}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET lista",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\npm.test(\"Devuelve un arreglo\", function () {\r\n    pm.expect(pm.response.json()).to.be.an(\"array\");\r\n});\r\npm.test(\"La lista contiene la criatura creada\", function () {\r\n    const ids = pm.response.json().map(c => c.id);\r\n    pm.expect(ids).to.include(pm.environment.get(\"creatureId\"));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/creatures",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Creature retrieved successfully\", function () {\r\n    pm.response.to.have.status(200);\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.have.property(\"id\");\r\n    pm.expect(jsonData.id).to.eql(pm.environment.get(\"creatureId\"));\r\n    pm.expect(jsonData.name).to.eql(\"Dragón\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{creatureId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{creatureId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT actualizar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Creature updated successfully\", function () {\r\n    pm.response.to.have.status(200);\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData.id).to.eql(pm.environment.get(\"creatureId\"));\r\n    pm.expect(jsonData.name).to.eql(\"Dragón Anciano\");\r\n    pm.expect(jsonData.dangerLevel).to.eql(9);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Dragón Anciano\",\r\n    \"species\":\"Dragón\",\r\n    \"size\":15,\r\n    \"dangerLevel\":9,\r\n    \"healthStatus\":\"recovering\",\r\n    \"zone\":{\"id\":{{zoneId}}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{creatureId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{creatureId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE criatura (no critica)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Creature deleted: status 204\", function () {\r\n    pm.response.to.have.status(204);\r\n});\r\npm.test(\"La respuesta no trae cuerpo\", function () {\r\n    pm.expect(pm.response.text()).to.eql(\"\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{creatureId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{creatureId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET despues de borrar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "pm.test(\"La respuesta explica el error\", function () {\r",
+                  "    pm.expect(pm.response.json()).to.have.property(\"error\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{creatureId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{creatureId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validaciones y errores",
+      "item": [
+        {
+          "name": "POST invalido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\npm.test(\"Indica los campos inválidos\", function () {\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.have.property(\"name\");\r\n    pm.expect(jsonData).to.have.property(\"size\");\r\n    pm.expect(jsonData).to.have.property(\"dangerLevel\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"\",\r\n    \"species\":\"Hidra\",\r\n    \"size\":-1,\r\n    \"dangerLevel\":11,\r\n    \"healthStatus\":\"healthy\",\r\n    \"zone\":{\"id\":{{zoneId}}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET ID inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\npm.test(\"La respuesta explica el error\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"error\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/9999",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "9999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST criatura critica",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Criatura crítica creada: 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\npm.environment.set(\"criticalId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Basilisco\",\r\n    \"species\":\"Basilisco\",\r\n    \"size\":8,\r\n    \"dangerLevel\":9,\r\n    \"healthStatus\":\"critical\",\r\n    \"zone\":{\"id\":{{zoneId}}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE criatura critica",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"No se puede borrar una criatura crítica: 409\", function () {\r\n    pm.response.to.have.status(409);\r\n});\r\npm.test(\"El mensaje menciona el estado crítico\", function () {\r\n    pm.expect(pm.response.json().error).to.include(\"critical\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{criticalId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{criticalId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Limpieza",
+      "item": [
+        {
+          "name": "PUT sanar critico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Basilisco\",\r\n    \"species\":\"Basilisco\",\r\n    \"size\":8,\r\n    \"dangerLevel\":9,\r\n    \"healthStatus\":\"healthy\",\r\n    \"zone\":{\"id\":{{zoneId}}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{criticalId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{criticalId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE criatura ya sana",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/creatures/{{criticalId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "creatures",
+                "{{criticalId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE zona",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/zones/{{zoneId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "zones",
+                "{{zoneId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,504 @@
+{
+	"id": "1ab99e2c-a2a9-4a92-a627-309c30cb44ce",
+	"name": "Zoo-local",
+	"timestamp": "2026-10-23T04:30:13.055Z",
+	"collection_id": "58705690-186ae42e-4fa5-4d14-bda4-be6758e7003f",
+	"folder_id": 0,
+	"environment_id": "58705690-69cea3e9-d501-4d14-98d6-de64217d9f31",
+	"totalPass": 22,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-10-23T04:30:09.530Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "2be178ca-67ba-4fc6-9583-9a529edbd14e",
+			"name": "Crear zona",
+			"url": "http://localhost:8080/api/zones",
+			"time": 44,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Zona creada: status 201": true,
+				"La zona trae id y los datos enviados": true
+			},
+			"testPassFailCounts": {
+				"Zona creada: status 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La zona trae id y los datos enviados": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				44
+			],
+			"allTests": [
+				{
+					"Zona creada: status 201": true,
+					"La zona trae id y los datos enviados": true
+				}
+			]
+		},
+		{
+			"id": "0aa9a78f-1b9f-46ac-a3d1-1b8b98685c80",
+			"name": "Crear criatura",
+			"url": "http://localhost:8080/api/creatures",
+			"time": 77,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Creature created successfully": true
+			},
+			"testPassFailCounts": {
+				"Creature created successfully": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				77
+			],
+			"allTests": [
+				{
+					"Creature created successfully": true
+				}
+			]
+		},
+		{
+			"id": "bd51f57d-202f-4628-a737-c03274b55e15",
+			"name": "GET lista",
+			"url": "http://localhost:8080/api/creatures",
+			"time": 61,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true,
+				"Devuelve un arreglo": true,
+				"La lista contiene la criatura creada": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Devuelve un arreglo": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La lista contiene la criatura creada": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				61
+			],
+			"allTests": [
+				{
+					"Status 200": true,
+					"Devuelve un arreglo": true,
+					"La lista contiene la criatura creada": true
+				}
+			]
+		},
+		{
+			"id": "028b41ee-dcda-47d8-9810-c573ad18f868",
+			"name": "GET por ID",
+			"url": "http://localhost:8080/api/creatures/21",
+			"time": 21,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Creature retrieved successfully": true
+			},
+			"testPassFailCounts": {
+				"Creature retrieved successfully": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				21
+			],
+			"allTests": [
+				{
+					"Creature retrieved successfully": true
+				}
+			]
+		},
+		{
+			"id": "ed612f30-5020-4177-9159-18c643f6e327",
+			"name": "PUT actualizar",
+			"url": "http://localhost:8080/api/creatures/21",
+			"time": 141,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Creature updated successfully": true
+			},
+			"testPassFailCounts": {
+				"Creature updated successfully": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				141
+			],
+			"allTests": [
+				{
+					"Creature updated successfully": true
+				}
+			]
+		},
+		{
+			"id": "6036432e-c3e7-4696-92dc-11e2a1615a6e",
+			"name": "DELETE criatura (no critica)",
+			"url": "http://localhost:8080/api/creatures/21",
+			"time": 57,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Creature deleted: status 204": true,
+				"La respuesta no trae cuerpo": true
+			},
+			"testPassFailCounts": {
+				"Creature deleted: status 204": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La respuesta no trae cuerpo": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				57
+			],
+			"allTests": [
+				{
+					"Creature deleted: status 204": true,
+					"La respuesta no trae cuerpo": true
+				}
+			]
+		},
+		{
+			"id": "271b63dc-7166-48c1-aed5-58b697553ce8",
+			"name": "GET despues de borrar",
+			"url": "http://localhost:8080/api/creature/21",
+			"time": 13,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status 404 Not Found": true,
+				"La respuesta explica el error": true
+			},
+			"testPassFailCounts": {
+				"Status 404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La respuesta explica el error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Status 404 Not Found": true,
+					"La respuesta explica el error": true
+				}
+			]
+		},
+		{
+			"id": "9b58c4dd-acd0-45e3-9af0-f5e8e8880bdd",
+			"name": "POST invalido",
+			"url": "http://localhost:8080/api/creatures",
+			"time": 11,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status 400 Bad Request": true,
+				"Indica los campos inválidos": true
+			},
+			"testPassFailCounts": {
+				"Status 400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Indica los campos inválidos": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"Status 400 Bad Request": true,
+					"Indica los campos inválidos": true
+				}
+			]
+		},
+		{
+			"id": "744f5349-ea91-41f1-b8c5-6cfb7b62f4b6",
+			"name": "GET ID inexistente",
+			"url": "http://localhost:8080/api/creatures/9999",
+			"time": 25,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status 404 Not Found": true,
+				"La respuesta explica el error": true
+			},
+			"testPassFailCounts": {
+				"Status 404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La respuesta explica el error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				25
+			],
+			"allTests": [
+				{
+					"Status 404 Not Found": true,
+					"La respuesta explica el error": true
+				}
+			]
+		},
+		{
+			"id": "59333911-da4a-45fc-9529-befe32992313",
+			"name": "POST criatura critica",
+			"url": "http://localhost:8080/api/creatures",
+			"time": 51,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Criatura crítica creada: 201": true
+			},
+			"testPassFailCounts": {
+				"Criatura crítica creada: 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				51
+			],
+			"allTests": [
+				{
+					"Criatura crítica creada: 201": true
+				}
+			]
+		},
+		{
+			"id": "87139116-d1cb-4366-9a71-a1c745474c2c",
+			"name": "DELETE criatura critica",
+			"url": "http://localhost:8080/api/creatures/22",
+			"time": 35,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"No se puede borrar una criatura crítica: 409": true,
+				"El mensaje menciona el estado crítico": true
+			},
+			"testPassFailCounts": {
+				"No se puede borrar una criatura crítica: 409": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El mensaje menciona el estado crítico": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"No se puede borrar una criatura crítica: 409": true,
+					"El mensaje menciona el estado crítico": true
+				}
+			]
+		},
+		{
+			"id": "9be24368-6cbf-4eda-9d97-ecf97e894246",
+			"name": "PUT sanar critico",
+			"url": "http://localhost:8080/api/creatures/22",
+			"time": 152,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status 200": true
+			},
+			"testPassFailCounts": {
+				"Status 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				152
+			],
+			"allTests": [
+				{
+					"Status 200": true
+				}
+			]
+		},
+		{
+			"id": "416afa3c-b0fd-42be-894a-ccd00ac50c3e",
+			"name": "DELETE criatura ya sana",
+			"url": "http://localhost:8080/api/creatures/22",
+			"time": 62,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status 204": true
+			},
+			"testPassFailCounts": {
+				"Status 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				62
+			],
+			"allTests": [
+				{
+					"Status 204": true
+				}
+			]
+		},
+		{
+			"id": "d798a55d-6c61-44cd-96fd-ee8485925ae0",
+			"name": "DELETE zona",
+			"url": "http://localhost:8080/api/zones/21",
+			"time": 270,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status 204": true
+			},
+			"testPassFailCounts": {
+				"Status 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				270
+			],
+			"allTests": [
+				{
+					"Status 204": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 1020,
+	"collection": {
+		"requests": [
+			{
+				"id": "2be178ca-67ba-4fc6-9583-9a529edbd14e",
+				"method": "POST"
+			},
+			{
+				"id": "0aa9a78f-1b9f-46ac-a3d1-1b8b98685c80",
+				"method": "POST"
+			},
+			{
+				"id": "bd51f57d-202f-4628-a737-c03274b55e15",
+				"method": "GET"
+			},
+			{
+				"id": "028b41ee-dcda-47d8-9810-c573ad18f868",
+				"method": "GET"
+			},
+			{
+				"id": "ed612f30-5020-4177-9159-18c643f6e327",
+				"method": "PUT"
+			},
+			{
+				"id": "6036432e-c3e7-4696-92dc-11e2a1615a6e",
+				"method": "DELETE"
+			},
+			{
+				"id": "271b63dc-7166-48c1-aed5-58b697553ce8",
+				"method": "GET"
+			},
+			{
+				"id": "9b58c4dd-acd0-45e3-9af0-f5e8e8880bdd",
+				"method": "POST"
+			},
+			{
+				"id": "744f5349-ea91-41f1-b8c5-6cfb7b62f4b6",
+				"method": "GET"
+			},
+			{
+				"id": "59333911-da4a-45fc-9529-befe32992313",
+				"method": "POST"
+			},
+			{
+				"id": "87139116-d1cb-4366-9a71-a1c745474c2c",
+				"method": "DELETE"
+			},
+			{
+				"id": "9be24368-6cbf-4eda-9d97-ecf97e894246",
+				"method": "PUT"
+			},
+			{
+				"id": "416afa3c-b0fd-42be-894a-ccd00ac50c3e",
+				"method": "DELETE"
+			},
+			{
+				"id": "d798a55d-6c61-44cd-96fd-ee8485925ae0",
+				"method": "DELETE"
+			}
+		]
+	}
+}
