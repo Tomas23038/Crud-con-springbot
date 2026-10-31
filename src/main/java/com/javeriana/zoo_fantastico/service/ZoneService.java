@@ -24,6 +24,7 @@ public class ZoneService {
     }
 
     public zoneresponse createZone(Zone zone) {
+        zone.setId(null); // POST siempre crea: si llega un id, save() reemplazaría esa zona
         return toResponse(zoneRepository.save(zone), 0);
     }
 
