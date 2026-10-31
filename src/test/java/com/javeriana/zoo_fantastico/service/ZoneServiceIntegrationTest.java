@@ -178,4 +178,28 @@ public class ZoneServiceIntegrationTest {
         assertThrows(IllegalStateException.class, () -> zoneService.deleteZone(zone.getId()));
         assertTrue(zoneRepository.findById(zone.getId()).isPresent());
     }
+
+    /**
+     * 7. Crear una zona con el ID de otra que ya existe no la reemplaza.
+     *
+     * <p>Guarda una zona con capacidad 5 y 3 criaturas, y luego crea otra zona con el mismo ID y
+     * capacidad 1, como si un cliente mandara un {@code "id"} en el cuerpo de un POST. En la base
+     * de datos, la zona original debe seguir con capacidad 5.</p>
+     *
+     * <p>Sirve para comprobar que un POST no puede usarse para saltarse la regla que impide bajar
+     * la capacidad por debajo de las criaturas que ya hay.</p>
+     */
+    @Test
+    void testCreateZone_WithExistingId_ShouldNotOverwrite() {
+        Zone zone = zoneRepository.save(newZone("Bosque", 5));
+        saveCreatureIn(zone);
+        saveCreatureIn(zone);
+        saveCreatureIn(zone);
+
+        Zone other = newZone("Otra", 1);
+        other.setId(zone.getId());
+        zoneService.createZone(other);
+
+        assertEquals(5, zoneRepository.findById(zone.getId()).orElseThrow().getCapacity());
+    }
 }

@@ -21,6 +21,7 @@ public class CreatureService {
     }
 
     public Creature createCreature(Creature creature) {
+        creature.setId(null); // POST siempre crea: si llega un id, save() reemplazaría esa criatura
         Zone zone = findZone(creature.getZone());
         validateCapacity(zone);
         creature.setZone(zone);

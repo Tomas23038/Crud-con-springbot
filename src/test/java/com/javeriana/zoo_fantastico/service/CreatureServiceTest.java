@@ -289,4 +289,28 @@ class CreatureServiceTest {
 
         assertThrows(IllegalStateException.class, () -> creatureService.deleteCreature(1L));
     }
+
+    /**
+     * 10. Crear una criatura ignora el ID que venga en los datos.
+     *
+     * <p>Simula que el cliente manda una criatura con ID 99 en un POST. El servicio debe quitar
+     * ese ID antes de guardar, para que el repositorio cree una criatura nueva en vez de
+     * reemplazar la que ya tenga el ID 99.</p>
+     *
+     * <p>Sirve para comprobar que un POST siempre crea y nunca sobrescribe otra criatura.</p>
+     */
+    @Test
+    void createCreature_withId_ignoresId() {
+        Zone zone = newZone(1L, 5);
+        Creature creature = newCreature("Dragon", zone);
+        creature.setId(99L);
+
+        when(zoneRepository.findById(1L)).thenReturn(Optional.of(zone));
+        when(creatureRepository.countByZoneId(1L)).thenReturn(0L);
+        when(creatureRepository.save(creature)).thenReturn(creature);
+
+        Creature result = creatureService.createCreature(creature);
+
+        assertNull(result.getId());
+    }
 }

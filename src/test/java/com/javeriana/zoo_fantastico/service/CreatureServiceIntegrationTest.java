@@ -312,4 +312,29 @@ public class CreatureServiceIntegrationTest {
                 () -> creatureService.deleteCreature(creature.getId()));
         assertTrue(creatureRepository.findById(creature.getId()).isPresent());
     }
+
+    /**
+     * 11. Crear una criatura con el ID de otra que ya existe no la reemplaza.
+     *
+     * <p>Guarda la criatura "Original" y luego crea otra, "Otra", con el mismo ID, como si un
+     * cliente mandara un {@code "id"} en el cuerpo de un POST. En la base de datos, "Original"
+     * debe seguir igual y "Otra" debe quedar guardada con un ID nuevo.</p>
+     *
+     * <p>Sirve para comprobar que un POST no puede usarse para sobrescribir criaturas y así
+     * saltarse reglas como la de no eliminar criaturas en estado crítico.</p>
+     */
+    @Test
+    void testCreateCreature_WithExistingId_ShouldNotOverwrite() {
+        Zone zone = newZone(5);
+        Creature original = newCreature("Original", zone);
+        creatureService.createCreature(original);
+
+        Creature other = newCreature("Otra", zone);
+        other.setId(original.getId());
+        creatureService.createCreature(other);
+
+        Creature foundOriginal = creatureRepository.findById(original.getId()).orElseThrow();
+        assertEquals("Original", foundOriginal.getName());
+        assertNotEquals(original.getId(), other.getId());
+    }
 }

@@ -244,4 +244,24 @@ class ZoneServiceTest {
 
         assertThrows(IllegalStateException.class, () -> zoneService.deleteZone(1L));
     }
+
+    /**
+     * 9. Crear una zona ignora el ID que venga en los datos.
+     *
+     * <p>Simula que el cliente manda una zona con ID 99 en un POST. El servicio debe quitar ese ID
+     * antes de guardar, para que el repositorio cree una zona nueva en vez de reemplazar la que ya
+     * tenga el ID 99.</p>
+     *
+     * <p>Sirve para comprobar que un POST siempre crea y nunca sobrescribe otra zona.</p>
+     */
+    @Test
+    void createZone_withId_ignoresId() {
+        Zone zone = newZone(99L, "Bosque", 5);
+
+        when(zoneRepository.save(zone)).thenReturn(zone);
+
+        zoneresponse result = zoneService.createZone(zone);
+
+        assertNull(result.id());
+    }
 }
