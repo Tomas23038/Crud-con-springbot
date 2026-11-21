@@ -103,7 +103,7 @@ class ZoneServiceTest {
         zoneresponse result = zoneService.createZone(zone);
 
         assertNotNull(result);
-        assertEquals("Bosque", result.name());
+        assertEquals("Selva", result.name());
         assertEquals(0, result.creatureCount());
     }
 
