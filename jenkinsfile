@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'develop',
+                    url: 'https://github.com/Tomas23038/Crud-con-springbot.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'chmod +x mvnw'
+                sh './mvnw -B clean package -DskipTests'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh './mvnw -B test'
+            }
+            post {
+                always { junit 'target/surefire-reports/*.xml' }
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t zoo-fantastic-app:latest .'
+            }
+        }
+        stage('Docker Run') {
+            steps {
+                withCredentials([string(credentialsId: 'db-password', variable: 'DB_PASSWORD')]) {
+                    sh '''
+                        docker rm -f zoo-app || true
+                        docker run -d --name zoo-app --network zoo-net -p 8080:8080 \
+                          -e SPRING_DATASOURCE_URL="jdbc:mysql://zoo-mysql:3306/zoo_fantastico?createDatabaseIfNotExist=true" \
+                          -e DB_PASSWORD \
+                          zoo-fantastic-app:latest
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always  { echo 'Pipeline terminado.' }
+        success { echo '¡Despliegue exitoso!' }
+        failure { echo 'Error en el pipeline. Revisar los logs.' }
+    }
+}
